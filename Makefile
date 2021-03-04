@@ -1,2 +1,2 @@
 all:
-	go run ./cmd/web
+	go build ./cmd/web

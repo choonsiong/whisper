@@ -27,28 +27,11 @@ func main() {
 		infoLog:  infoLog,
 	}
 
-	mux := http.NewServeMux()
-	//mux.HandleFunc("/", home)
-	//mux.HandleFunc("/whisper", showWhisper)
-	//mux.HandleFunc("/whisper/create", createWhisper)
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/whisper", app.showWhisper)
-	mux.HandleFunc("/whisper/create", app.createWhisper)
-
-	// Note that the path given to the http.Dir() is relative to the
-	// project directory root.
-	fileServer := http.FileServer(http.Dir("./ui/static"))
-
-	// Use the mux.Handle() function to register the file server as the handler for
-	// all URL paths that start with "/static/". For matching paths, we strip the
-	// "/static" prefix before the request reaches the file server.
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
 	// Initialize a new http server struct so that we can use our custom errorLog.
 	srv := 	&http.Server{
 		Addr: *addr,
 		ErrorLog: errorLog,
-		Handler: mux,
+		Handler: app.routes(),
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
