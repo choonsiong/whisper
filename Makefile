@@ -1,2 +1,5 @@
+clean:
+	rm -f whisper
 all:
-	go build ./cmd/web
+	rm -f whisper
+	go build -o whisper  ./cmd/web
