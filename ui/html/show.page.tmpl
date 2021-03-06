@@ -1,0 +1,18 @@
+{{template "base" .}}
+
+{{define "title"}}Whisper #{{.Whisper.ID}}{{end}}
+
+{{define "main"}}
+<div class="snippet">
+    <div class="metadata">
+        <strong>{{.Whisper.Title}}</strong>
+        <span>#{{.Whisper.ID}}</span>
+    </div>
+    <pre><code>{{.Whisper.Content}}</code></pre>
+    <div class="metadata">
+        <time>Created: {{.Whisper.Created}}</time>
+        <time>Expires: {{.Whisper.Expires}}</time>
+    </div>
+</div>
+
+{{end}}

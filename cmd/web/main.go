@@ -13,6 +13,7 @@ import (
 
 // Define an application struct to hold the application-wide dependencies.
 type application struct {
+	debug bool
 	errorLog *log.Logger
 	infoLog *log.Logger
 	whispers *mysql.WhisperModel
@@ -20,6 +21,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
+	debug := flag.Bool("debug", false,"Turn on debug mode")
 	dsn := flag.String("dsn", "whisperadmin:tecnomen@/whisper?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
@@ -37,6 +39,7 @@ func main() {
 
 	// Initialize a new instance of application containing the dependencies.
 	app := &application{
+		debug: *debug,
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		whispers: &mysql.WhisperModel{DB: db},
