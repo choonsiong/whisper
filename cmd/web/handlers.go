@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/choonsiong/whisper/pkg/models"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -49,8 +51,22 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s, err := app.whispers.Get(id)
+
+	if err != nil {
+		// If no matching record is found, return a 404 Not Found response.
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+
+		return
+	}
+
 	//w.Write([]byte("Show snippet"))
-	fmt.Fprintf(w, "Show whisper with ID %d...", id)
+	//fmt.Fprintf(w, "Show whisper with ID %d...", id)
+	fmt.Fprintf(w, "%v", s)
 }
 
 func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
@@ -67,5 +83,17 @@ func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Create a new whisper..."))
+	// Create dummy data for testing.
+	title := "0 snail"
+	content := "0 snail\nClimb Mount Fiji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
+	expires := "7"
+
+	id, err := app.whispers.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	//w.Write([]byte("Create a new whisper..."))
+	http.Redirect(w, r, fmt.Sprintf("/whisper?id=%d", id), http.StatusSeeOther)
 }
