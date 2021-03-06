@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/choonsiong/whisper/pkg/models"
-	"html/template"
+	//"html/template"
 	"net/http"
 	"strconv"
 )
@@ -16,29 +16,39 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/home.page.tmpl", // must be the first
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
+	s, err := app.whispers.Latest()
 	if err != nil {
-		//log.Println(err.Error())
-		//app.errorLog.Println(err.Error())
-		//http.Error(w, "Internal Server Error", 500)
 		app.serverError(w, err)
 		return
 	}
 
-	// Write the template content as the response body.
-	err = ts.Execute(w, nil)
-	if err != nil {
-		//log.Println(err.Error())
-		//app.errorLog.Println(err.Error())
-		//http.Error(w, "Internal Server Error", 500)
-		app.serverError(w, err)
+	for _, whisper := range s {
+		fmt.Fprintf(w, "%v\n", whisper)
 	}
+
+	//files := []string{
+	//	"./ui/html/home.page.tmpl", // must be the first
+	//	"./ui/html/base.layout.tmpl",
+	//	"./ui/html/footer.partial.tmpl",
+	//}
+	//
+	//ts, err := template.ParseFiles(files...)
+	//if err != nil {
+	//	//log.Println(err.Error())
+	//	//app.errorLog.Println(err.Error())
+	//	//http.Error(w, "Internal Server Error", 500)
+	//	app.serverError(w, err)
+	//	return
+	//}
+	//
+	//// Write the template content as the response body.
+	//err = ts.Execute(w, nil)
+	//if err != nil {
+	//	//log.Println(err.Error())
+	//	//app.errorLog.Println(err.Error())
+	//	//http.Error(w, "Internal Server Error", 500)
+	//	app.serverError(w, err)
+	//}
 
 	//w.Write([]byte("Hello"))
 }
