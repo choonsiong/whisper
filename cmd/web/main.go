@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"github.com/choonsiong/whisper/pkg/models/mysql"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog *log.Logger
+	whispers *mysql.WhisperModel
 }
 
 func main() {
@@ -37,6 +39,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		whispers: &mysql.WhisperModel{DB: db},
 	}
 
 	// Initialize a new http server struct so that we can use our custom errorLog.
