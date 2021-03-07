@@ -3,17 +3,18 @@
 {{define "title"}}Whisper #{{.Whisper.ID}}{{end}}
 
 {{define "main"}}
-<div class="snippet">
-    <div class="metadata">
-        <strong>{{.Whisper.Title}}</strong>
-        <span>#{{.Whisper.ID}}</span>
+    {{with .Whisper}}
+    <div class="snippet">
+        <div class="metadata">
+            <strong>{{.Title}}</strong>
+            <span>#{{.ID}}</span>
+        </div>
+        <pre><code>{{.Content}}</code></pre>
+        <div class="metadata">
+            <!-- Note that Format is a method of Time with one parameter. Below is how we pass the parameter inside template. -->
+            <time>Created: {{.Created.Format "02 January 2006"}}</time>
+            <time>Expires: {{.Expires.Format "02 January 2006"}}</time>
+        </div>
     </div>
-    <pre><code>{{.Whisper.Content}}</code></pre>
-    <div class="metadata">
-        <!-- Note that Format is a method of Time with one parameter. Below is how we pass the parameter inside template. -->
-        <time>Created: {{.Whisper.Created.Format "02 January 2006"}}</time>
-        <time>Expires: {{.Whisper.Expires.Format "02 January 2006"}}</time>
-    </div>
-</div>
-
+    {{end}}
 {{end}}

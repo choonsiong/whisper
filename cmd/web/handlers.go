@@ -16,15 +16,19 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//s, err := app.whispers.Latest()
-	//if err != nil {
-	//	app.serverError(w, err)
-	//	return
-	//}
-	//
+	s, err := app.whispers.Latest()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	//for _, whisper := range s {
 	//	fmt.Fprintf(w, "%v\n", whisper)
 	//}
+
+	data := &templateData{
+		Whispers: s,
+	}
 
 	files := []string{
 		"./ui/html/home.page.tmpl", // must be the first
@@ -42,7 +46,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write the template content as the response body.
-	err = ts.Execute(w, nil)
+	// Pass in the templateData struct when executing the template.
+	err = ts.Execute(w, data)
 	if err != nil {
 		//log.Println(err.Error())
 		//app.errorLog.Println(err.Error())

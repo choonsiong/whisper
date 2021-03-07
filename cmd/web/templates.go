@@ -6,4 +6,5 @@ import "github.com/choonsiong/whisper/pkg/models"
 // data that we want to pass to our HTML templates.
 type templateData struct {
 	Whisper *models.Whisper
+	Whispers []*models.Whisper
 }
