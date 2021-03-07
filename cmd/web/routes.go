@@ -1,9 +1,19 @@
 package main
 
-import "net/http"
+import (
+	"github.com/justinas/alice"
+	"net/http"
+)
+
+// Note: We update the routes to use the justinas/alice package to help us manage
+// our middleware/handler chains.
 
 //func (app *application) routes() *http.ServeMux {
 func (app *application) routes() http.Handler {
+	// Create a middleware chain containing our 'standard' middleware which will
+	// be used for every request our application receives.
+	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", app.home)
@@ -30,5 +40,8 @@ func (app *application) routes() http.Handler {
 	//return app.logRequest(secureHeaders(mux))
 
 	// Wrap the existing chain with the recoverPanic middleware.
-	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
+	//return app.recoverPanic(app.logRequest(secureHeaders(mux)))
+
+	// Return the 'standard' middleware chain followed by the servemux.
+	return standardMiddleware.Then(mux)
 }

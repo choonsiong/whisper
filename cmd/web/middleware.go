@@ -31,6 +31,11 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 // log a stack trace to the server log, unwind the stack for the affected goroutine (calling any
 // deferred functions along the way) and close the underlying HTTP connection. But it won't terminate
 // the application, so importantly, any panic in our handlers won't bring down the server.
+// Note: It's important to realize that this middleware will only recover panics that happen in the same
+// goroutine that executed the recoverPanic() middleware. If, for example, you have a handler which
+// spins up another goroutine (e.g. to do some background processing), then any panics that happen in
+// the second goroutine will not be recovered - not by the recoverPanic() and not by the panic recovery
+// built into Go HTTP server. They will cause your application to exit and bring down the server.
 func (app *application) recoverPanic(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Create a defer function (which will always be run in the event of a
