@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // This 'middleware' will act on every request that is received, so it need to be
 // executed before a request hits servemux.
@@ -19,6 +22,32 @@ func secureHeaders(next http.Handler) http.Handler {
 func (app *application) logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		app.infoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+		next.ServeHTTP(w, r)
+	})
+}
+
+// We don't want panic to bring down the whole application, so any panic is isolated to the
+// goroutine serving the active HTTP request. Specifically, following a panic our server will
+// log a stack trace to the server log, unwind the stack for the affected goroutine (calling any
+// deferred functions along the way) and close the underlying HTTP connection. But it won't terminate
+// the application, so importantly, any panic in our handlers won't bring down the server.
+func (app *application) recoverPanic(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Create a defer function (which will always be run in the event of a
+		// panic as Go unwinds the stack).
+		defer func() {
+			// Use the builtin recover function to check if there has been a
+			// paic or not. If there has...
+			if err := recover(); err != nil {
+				// Set a "Connection: close" header on the response so that Go's HTTP server
+				// automatically close the current connection after a response has been
+				// sent. It also informs the user that the connection will be closed.
+				w.Header().Set("Connection", "close")
+				// Return a 500 Internal Server Error response.
+				app.serverError(w, fmt.Errorf("%s", err))
+			}
+		}()
+
 		next.ServeHTTP(w, r)
 	})
 }

@@ -15,6 +15,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Introduce panic for testing recoverPanic
+	//panic("Ooops!")
+
 	s, err := app.whispers.Latest()
 	if err != nil {
 		app.serverError(w, err)
@@ -29,6 +32,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "home.page.tmpl", &templateData{
 		Whispers: s,
 	})
+
+	if app.debug {
+		app.infoLog.Printf("home: %v", s)
+	}
 
 	/*
 	data := &templateData{
@@ -115,6 +122,7 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 
 	if app.debug {
 		app.infoLog.Printf("showWhisper: id = %d", id)
+		app.infoLog.Printf("showWhisper: %v", s)
 	}
 
 	//w.Write([]byte("Show snippet"))

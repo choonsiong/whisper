@@ -27,5 +27,8 @@ func (app *application) routes() http.Handler {
 	//return secureHeaders(mux)
 
 	// Wrap the existing chain with the logRequest middleware.
-	return app.logRequest(secureHeaders(mux))
+	//return app.logRequest(secureHeaders(mux))
+
+	// Wrap the existing chain with the recoverPanic middleware.
+	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
 }
