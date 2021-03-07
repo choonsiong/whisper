@@ -24,7 +24,7 @@ type application struct {
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	debug := flag.Bool("debug", false,"Turn on debug mode")
-	dsn := flag.String("dsn", "whisperadmin:tecnomen@/whisper?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", "whisperadmin:password@/whisper?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
 
