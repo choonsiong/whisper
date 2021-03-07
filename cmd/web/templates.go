@@ -9,6 +9,7 @@ import (
 // Define a templateData type to act as the holding structure for any dynamic
 // data that we want to pass to our HTML templates.
 type templateData struct {
+	CurrentYear int
 	Whisper *models.Whisper
 	Whispers []*models.Whisper // Store the parsed templates in an in-memory cache.
 }
