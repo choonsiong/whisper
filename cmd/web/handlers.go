@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/choonsiong/whisper/pkg/models"
-	"html/template"
 	"net/http"
 	"strconv"
 )
@@ -26,6 +25,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	//	fmt.Fprintf(w, "%v\n", whisper)
 	//}
 
+	// Use the new render helper instead of below...
+	app.render(w, r, "home.page.tmpl", &templateData{
+		Whispers: s,
+	})
+
+	/*
 	data := &templateData{
 		Whispers: s,
 	}
@@ -53,7 +58,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		//app.errorLog.Println(err.Error())
 		//http.Error(w, "Internal Server Error", 500)
 		app.serverError(w, err)
-	}
+	}*/
 
 	//w.Write([]byte("Hello"))
 }
@@ -79,8 +84,12 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.render(w, r, "show.page.tmpl", &templateData{
+		Whisper: s,
+	})
+
 	// Create an instance of a templateData struct holding the whisper data.
-	data := &templateData{Whisper: s}
+	/*data := &templateData{Whisper: s}
 
 	files := []string{
 		"./ui/html/show.page.tmpl",
@@ -102,7 +111,7 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.serverError(w, err)
-	}
+	}*/
 
 	if app.debug {
 		app.infoLog.Printf("showWhisper: id = %d", id)
