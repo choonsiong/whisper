@@ -14,7 +14,8 @@
         {{range .Whispers}}
         <tr>
             <td><a href="/whispers?id={{.ID}}">{{.Title}}</a></td>
-            <td>{{.Created}}</td>
+            <!-- Use the custom template function here -->
+            <td>{{humanDate .Created}}</td>
             <td>#{{.ID}}</td>
         </tr>
         {{end}}

@@ -12,8 +12,12 @@
         <pre><code>{{.Content}}</code></pre>
         <div class="metadata">
             <!-- Note that Format is a method of Time with one parameter. Below is how we pass the parameter inside template. -->
-            <time>Created: {{.Created.Format "02 January 2006"}}</time>
-            <time>Expires: {{.Expires.Format "02 January 2006"}}</time>
+            <time>Created: {{humanDate .Created}}</time>
+            <!-- Use pipelining, works like pipelining outputs from one command to another in Unix -->
+            <time>{{.Expires | humanDate | printf "Created: %s"}}</time>
+<!--            <time>Expires: {{humanDate .Expires}}</time>-->
+<!--            <time>Created: {{.Created.Format "02 January 2006"}}</time>-->
+<!--            <time>Expires: {{.Expires.Format "02 January 2006"}}</time>-->
         </div>
     </div>
     {{end}}
