@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"github.com/choonsiong/whisper/pkg/models"
 	"net/http"
 	"strconv"
@@ -34,7 +33,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if app.debug {
-		app.infoLog.Printf("home: %v", s)
+		app.debugLog.Printf("home: %v", s)
 	}
 
 	/*
@@ -121,8 +120,8 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 	}*/
 
 	if app.debug {
-		app.infoLog.Printf("showWhisper: id = %d", id)
-		app.infoLog.Printf("showWhisper: %v", s)
+		app.debugLog.Printf("showWhisper: id = %d", id)
+		app.debugLog.Printf("showWhisper: %v", s)
 	}
 
 	//w.Write([]byte("Show snippet"))
@@ -144,17 +143,21 @@ func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create dummy data for testing.
-	title := "0 snail"
-	content := "0 snail\nClimb Mount Fiji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
-	expires := "7"
-
-	id, err := app.whispers.Insert(title, content, expires)
-	if err != nil {
-		app.serverError(w, err)
-		return
+	if app.debug {
+		app.debugLog.Println("createWhisper:")
 	}
 
-	//w.Write([]byte("Create a new whisper..."))
-	http.Redirect(w, r, fmt.Sprintf("/whisper?id=%d", id), http.StatusSeeOther)
+	// Create dummy data for testing.
+	//title := "0 snail"
+	//content := "0 snail\nClimb Mount Fiji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
+	//expires := "7"
+
+	//id, err := app.whispers.Insert(title, content, expires)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//	return
+	//}
+
+	w.Write([]byte("Create a new whisper..."))
+	//http.Redirect(w, r, fmt.Sprintf("/whisper?id=%d", id), http.StatusSeeOther)
 }

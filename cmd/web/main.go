@@ -15,6 +15,7 @@ import (
 // Define an application struct to hold the application-wide dependencies.
 type application struct {
 	debug bool
+	debugLog *log.Logger
 	errorLog *log.Logger
 	infoLog *log.Logger
 	whispers *mysql.WhisperModel
@@ -29,6 +30,7 @@ func main() {
 	flag.Parse()
 
 	// Create a logger for writing information messages.
+	debugLog := log.New(os.Stdout, "DEBUG\t", log.Ldate|log.Ltime|log.Lshortfile)
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
@@ -48,6 +50,7 @@ func main() {
 	// Initialize a new instance of application containing the dependencies.
 	app := &application{
 		debug: *debug,
+		debugLog: debugLog,
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		whispers: &mysql.WhisperModel{DB: db},
