@@ -159,10 +159,25 @@ func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	title := "1 snail"
-	content := "1 snail\nOne two three\n\n- Foo Bar"
-	expires := "1000"
+	//title := "1 snail"
+	//content := "1 snail\nOne two three\n\n- Foo Bar"
+	//expires := "1000"
 
+	// Call r.ParseForm() whichs add any data in POST request bodies to the
+	// r.PostForm map. This also works in the same way for PUT and PATCH requests.
+	err := r.ParseForm()
+
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Use the r.PostForm.Get() to retrieve the data fields from the r.PostForm map.
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	expires := r.PostForm.Get("expires")
+
+	// Create a new whisper record in the database using the form data.
 	id, err := app.whispers.Insert(title, content, expires)
 
 	if err != nil {
