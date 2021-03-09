@@ -2,22 +2,25 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/choonsiong/whisper/pkg/models"
 	"net/http"
 	"strconv"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		//http.NotFound(w, r)
-		app.notFound(w)
-		return
-	}
+	// No longer needed, because pat matches "/" path exactly.
+	//if r.URL.Path != "/" {
+	//	//http.NotFound(w, r)
+	//	app.notFound(w)
+	//	return
+	//}
 
 	// Introduce panic for testing recoverPanic
 	//panic("Ooops!")
 
 	s, err := app.whispers.Latest()
+
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -70,7 +73,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	//id, err := strconv.Atoi(r.URL.Query().Get("id"))
+
+	// Pat doesn't strip the colon from the named capture key, so we need to
+	// get the value of ":id" from the query string instead of "id".
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
+
 	if err != nil || id < 1 {
 		//http.NotFound(w, r)
 		app.notFound(w)
@@ -129,22 +137,40 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "%v", s)
 }
 
+func (app *application) createWhisperForm(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Create a new whisper form"))
+}
+
 func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost) // Must call this before below methods, else no effect
 
-		//w.WriteHeader(405) // WriteHeader() can only call once
-		//w.Write([]byte("Method Not Allowed"))
+	// Checking if the request method is a POST is now superfluous and can be
+	// removed.
+	//if r.Method != http.MethodPost {
+	//	w.Header().Set("Allow", http.MethodPost) // Must call this before below methods, else no effect
+	//
+	//	//w.WriteHeader(405) // WriteHeader() can only call once
+	//	//w.Write([]byte("Method Not Allowed"))
+	//
+	//	// Using http.Error() is more common than call the WriteHeader() and Write() above
+	//	//http.Error(w, "Method Not Allowed", 405)
+	//	app.clientError(w, http.StatusMethodNotAllowed)
+	//
+	//	return
+	//}
 
-		// Using http.Error() is more common than call the WriteHeader() and Write() above
-		//http.Error(w, "Method Not Allowed", 405)
-		app.clientError(w, http.StatusMethodNotAllowed)
+	title := "1 snail"
+	content := "1 snail\nOne two three\n\n- Foo Bar"
+	expires := "1000"
 
+	id, err := app.whispers.Insert(title, content, expires)
+
+	if err != nil {
+		app.serverError(w, err)
 		return
 	}
 
 	if app.debug {
-		app.debugLog.Println("createWhisper:")
+		app.debugLog.Printf("createWhisper: {%s, %s, %s}\n", title, content, expires)
 	}
 
 	// Create dummy data for testing.
@@ -158,6 +184,9 @@ func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	w.Write([]byte("Create a new whisper..."))
+	//w.Write([]byte("Create a new whisper..."))
 	//http.Redirect(w, r, fmt.Sprintf("/whisper?id=%d", id), http.StatusSeeOther)
+
+	// Change the redirect to use the new semantic URL style of /whisper/:id
+	http.Redirect(w, r, fmt.Sprintf("/whisper/%d", id), http.StatusSeeOther)
 }
