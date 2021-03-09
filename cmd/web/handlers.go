@@ -138,7 +138,8 @@ func (app *application) showWhisper(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) createWhisperForm(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create a new whisper form"))
+	//w.Write([]byte("Create a new whisper form"))
+	app.render(w, r, "create.page.tmpl", nil)
 }
 
 func (app *application) createWhisper(w http.ResponseWriter, r *http.Request) {
