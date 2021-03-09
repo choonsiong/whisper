@@ -13,7 +13,9 @@
         </tr>
         {{range .Whispers}}
         <tr>
-            <td><a href="/whispers?id={{.ID}}">{{.Title}}</a></td>
+            <!-- Use the new semantic URL style -->
+            <td><a href="/whispers/{{.ID}}">{{.Title}}</a></td>
+            <!-- <td><a href="/whispers?id={{.ID}}">{{.Title}}</a></td> -->
             <!-- Use the custom template function here -->
             <td>{{humanDate .Created}}</td>
             <td>#{{.ID}}</td>
